@@ -19,16 +19,43 @@
     --graphite:#3a4049;
     --offwhite:#22262d;
     --line: rgba(34,38,45,0.14);
+    --tag-text:#2b2f35;
+    --dot-color: rgba(34,38,45,0.10);
+    --panel-bg:#20242b;
+    --panel-text:#f4f0e6;
+    --panel-text-dim: rgba(244,240,230,0.72);
+    --panel-sku: rgba(244,240,230,0.5);
   }
+  html[data-theme="dark"]{
+    --ink:#181b20;
+    --ink-2:#1e2127;
+    --paper:#23262d;
+    --paper-dim:#9aa1ab;
+    --ledger:#3c9c6c;
+    --ledger-bright:#4db884;
+    --stamp:#e0654a;
+    --graphite:#d6d9de;
+    --offwhite:#f4f0e6;
+    --line: rgba(244,240,230,0.14);
+    --tag-text:#e6e8eb;
+    --dot-color: rgba(244,240,230,0.08);
+  }
+  html, body{ overflow-x:hidden; max-width:100%; }
   *{box-sizing:border-box;}
   html{scroll-behavior:smooth;}
   body{
     margin:0;
-    background:var(--ink);
+    background:
+      radial-gradient(circle, var(--dot-color) 1.2px, transparent 1.3px);
+    background-size:26px 26px;
+    background-color:var(--ink);
     color:var(--offwhite);
     font-family:'IBM Plex Sans', sans-serif;
     -webkit-font-smoothing:antialiased;
+    transition:background-color 0.35s ease, color 0.35s ease;
   }
+  ::selection{ background:var(--ledger-bright); color:var(--ink); }
+  :focus-visible{ outline:2px solid var(--ledger-bright); outline-offset:3px; }
   .mono{font-family:'Space Mono', monospace;}
   a{color:inherit;}
 
@@ -45,11 +72,18 @@
   }
   .brand{
     display:flex;
+    justify-content:center;
     align-items:center;
-    margin-bottom:26px;
-    margin-left:-8px;
+    width:100%;
+    margin-bottom:30px;
+    color:var(--graphite);
   }
-  .brand-logo{flex:none; max-width:100%; height:auto;}
+  .brand-logo{
+    flex:none;
+    display:block;
+    width:min(90%, 720px);
+    height:auto;
+  }
 
   .eyebrow{
     font-size:12px;
@@ -57,7 +91,9 @@
     text-transform:uppercase;
     color:var(--ledger-bright);
     display:flex;
+    flex-wrap:wrap;
     justify-content:space-between;
+    gap:8px 16px;
     margin-bottom:22px;
   }
   h1{
@@ -75,6 +111,81 @@
     line-height:1.6;
     color:var(--paper-dim);
     margin:0 0 30px;
+  }
+
+  /* stack badges */
+  .stack-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin:0 0 26px;
+  }
+  .stack-chip{
+    font-family:'Space Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.03em;
+    padding:5px 11px;
+    border:1px solid var(--line);
+    border-radius:20px;
+    color:var(--paper-dim);
+    background:rgba(127,127,127,0.05);
+  }
+
+  /* theme toggle */
+  .theme-toggle{
+    position:fixed;
+    top:20px;
+    right:20px;
+    z-index:50;
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    border:1px solid var(--line);
+    background:var(--paper);
+    color:var(--graphite);
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 4px 14px rgba(0,0,0,0.12);
+    transition:transform 0.25s ease, background-color 0.3s ease, box-shadow 0.25s ease;
+  }
+  .theme-toggle .icon-wrap{
+    position:relative;
+    width:19px;
+    height:19px;
+  }
+  .theme-toggle svg{
+    position:absolute;
+    top:0; left:0;
+    width:19px;
+    height:19px;
+    stroke:currentColor;
+    transition:transform 0.5s cubic-bezier(.34,1.4,.4,1), opacity 0.35s ease;
+  }
+  .theme-toggle .icon-moon{
+    opacity:1;
+    transform:rotate(0deg) scale(1);
+  }
+  .theme-toggle .icon-sun{
+    opacity:0;
+    transform:rotate(90deg) scale(0.4);
+  }
+  html[data-theme="dark"] .theme-toggle .icon-moon{
+    opacity:0;
+    transform:rotate(-90deg) scale(0.4);
+  }
+  html[data-theme="dark"] .theme-toggle .icon-sun{
+    opacity:1;
+    transform:rotate(0deg) scale(1);
+  }
+  .theme-toggle:hover{
+    transform:translateY(-2px) scale(1.05);
+    box-shadow:0 8px 20px rgba(0,0,0,0.18);
+  }
+  .theme-toggle:active .icon-wrap{
+    transform:scale(0.85);
+    transition:transform 0.15s ease;
   }
 
   /* CTA row */
@@ -153,12 +264,12 @@
   main{
     max-width:1100px;
     margin:0 auto;
-    padding:50px 28px 30px;
+    padding:64px 28px 30px;
   }
   .grid{
     display:grid;
     grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
-    gap:26px;
+    gap:32px;
   }
 
   .tag{
@@ -170,14 +281,20 @@
     display:flex;
     flex-direction:column;
     gap:12px;
-    transition:transform 0.25s ease, box-shadow 0.25s ease;
+    transition:transform 0.25s ease, box-shadow 0.25s ease, background-color 0.35s ease, opacity 0.5s ease;
     box-shadow:0 1px 10px rgba(34,38,45,0.08), 0 1px 0 rgba(34,38,45,0.06);
     border:1px solid rgba(34,38,45,0.08);
     overflow:hidden;
+    opacity:0;
+    transform:translateY(18px);
+  }
+  .tag.in-view{
+    opacity:1;
+    transform:translateY(0);
   }
   .tag:hover{
-    transform:translateY(-4px);
-    box-shadow:0 16px 30px rgba(34,38,45,0.14);
+    transform:translateY(-6px);
+    box-shadow:0 18px 34px rgba(34,38,45,0.18);
   }
   /* perforation + punch hole at top */
   .tag::before{
@@ -201,8 +318,10 @@
 
   .tag-top{
     display:flex;
+    flex-wrap:wrap;
     justify-content:space-between;
     align-items:flex-start;
+    gap:8px;
     margin-top:8px;
   }
   .sku{
@@ -254,12 +373,17 @@
     border-radius:8px;
     flex:none;
     box-shadow:0 1px 3px rgba(0,0,0,0.25);
+    transition:box-shadow 0.25s ease, transform 0.25s ease;
+  }
+  .tag:hover .app-icon{
+    box-shadow:0 0 0 3px rgba(47,111,78,0.18), 0 2px 8px rgba(0,0,0,0.28);
+    transform:scale(1.06);
   }
   .tag p{
     margin:0;
     font-size:13.5px;
-    line-height:1.55;
-    color:#2b2f35;
+    line-height:1.65;
+    color:var(--tag-text);
   }
 
   .shots-gallery{
@@ -353,9 +477,10 @@
 
   /* ===== Contact CTA panel ===== */
   .contact-panel{
-    margin-top:50px;
-    background:var(--offwhite);
-    color:var(--ink);
+    margin-top:70px;
+    background:var(--panel-bg);
+    transition:background-color 0.35s ease;
+    color:var(--panel-text);
     border-radius:4px;
     padding:40px;
     display:flex;
@@ -364,18 +489,19 @@
     justify-content:space-between;
     gap:26px;
   }
-  .contact-left .sku{color:rgba(244,240,230,0.5); opacity:1;}
+  .contact-left{ flex:1 1 320px; min-width:0; }
+  .contact-left .sku{color:var(--panel-sku); opacity:1;}
   .contact-panel h2{
     font-family:'Space Mono', monospace;
     font-size:clamp(22px, 3.4vw, 30px);
     margin:10px 0 10px;
-    color:var(--ink);
+    color:var(--panel-text);
   }
   .contact-panel p{
     max-width:480px;
     font-size:14px;
     line-height:1.6;
-    color:rgba(244,240,230,0.72);
+    color:var(--panel-text-dim);
     margin:0;
   }
   .contact-btn{
@@ -383,19 +509,40 @@
     align-items:center;
     gap:8px;
     background:var(--stamp);
-    color:var(--ink);
+    color:var(--panel-text);
     text-decoration:none;
     font-size:14px;
     letter-spacing:0.02em;
-    padding:16px 26px;
+    padding:16px 22px;
     border-radius:2px;
-    white-space:nowrap;
+    white-space:normal;
+    word-break:break-word;
+    max-width:100%;
     box-shadow:0 8px 20px rgba(181,67,46,0.35);
     transition:transform 0.2s ease, box-shadow 0.2s ease;
   }
   .contact-btn:hover{
     transform:translateY(-2px);
     box-shadow:0 12px 26px rgba(181,67,46,0.45);
+  }
+  .contact-cta{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+  }
+  .contact-email-note{
+    font-size:11.5px;
+    letter-spacing:0.02em;
+    color:var(--panel-text-dim);
+    text-decoration:none;
+    opacity:0.8;
+    transition:opacity 0.2s ease;
+  }
+  .contact-email-note:hover{
+    opacity:1;
+    text-decoration:underline;
+    text-underline-offset:3px;
   }
 
   /* ===== Footer ledger ===== */
@@ -426,13 +573,59 @@
 
   /* ===== Contact CTA ===== */
 
+  /* ===== Responsive breakpoints ===== */
+
+  /* Tablet */
+  @media (max-width:900px){
+    .grid{ grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:24px; }
+    header{ padding:48px 24px 34px; }
+    main{ padding:52px 24px 24px; }
+  }
+
+  /* Small tablet / large phone */
+  @media (max-width:680px){
+    header{ padding:36px 20px 28px; }
+    main{ padding:40px 20px 20px; }
+    .grid{ grid-template-columns:1fr; gap:20px; }
+    .contact-panel{ padding:30px; margin-top:50px; flex-direction:column; align-items:stretch; text-align:left; }
+    .contact-btn{ justify-content:center; }
+    footer{ flex-direction:column; align-items:flex-start; gap:12px; text-align:left; }
+    .cta-row{ gap:14px; }
+    .cta-btn{ width:100%; justify-content:center; text-align:center; }
+    .availability{ justify-content:center; width:100%; }
+  }
+
+  /* Phones */
   @media (max-width:520px){
-    header{padding:40px 20px 30px;}
-    main{padding:36px 20px 20px;}
+    header{padding:32px 18px 24px;}
+    main{padding:36px 18px 18px;}
+    .theme-toggle{ top:12px; right:12px; width:38px; height:38px; font-size:15px; }
+    .contact-panel{ padding:24px; }
+    .contact-btn{ font-size:12.5px; padding:14px 18px; }
+    .brand{ margin-bottom:18px; }
+    .tagline{ font-size:14.5px; }
+    .status-board{ font-size:11px; gap:8px 16px; }
+    h1{ margin-bottom:12px; }
+    .stack-row{ margin-bottom:20px; }
+  }
+
+  /* Very small phones */
+  @media (max-width:360px){
+    .eyebrow{ font-size:10.5px; }
+    h1{ font-size:clamp(26px, 8vw, 34px); }
+    .tag{ padding:18px 16px 16px; }
+    .shots-gallery img{ height:130px; }
   }
 </style>
 </head>
 <body>
+
+<button class="theme-toggle mono" id="theme-toggle" aria-label="Toggle dark/light theme" title="Toggle theme">
+  <span class="icon-wrap">
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+  </span>
+</button>
 
 <header>
   <div class="brand">
@@ -461,20 +654,27 @@
           <animateTransform attributeName="transform" type="rotate" from="360 90 90" to="0 90 90" dur="6s" repeatCount="indefinite"/>
         </g>
       </g>
-      <text x="290" y="115" font-size="46" font-weight="500" letter-spacing="1" fill="#1a1a1a" font-family="Arial, sans-serif">Aditya</text>
-      <text x="290" y="165" font-size="46" font-weight="500" letter-spacing="1" fill="#1a1a1a" font-family="Arial, sans-serif">Solutions</text>
-      <line x1="290" y1="180" x2="610" y2="180" stroke="#cccccc" stroke-width="0.5"/>
-      <text x="290" y="202" font-size="13" fill="#666666" font-family="Arial, sans-serif">Orbiting around smart solutions</text>
+      <text x="290" y="115" font-size="46" font-weight="500" letter-spacing="1" fill="currentColor" font-family="Arial, sans-serif">Aditya</text>
+      <text x="290" y="165" font-size="46" font-weight="500" letter-spacing="1" fill="currentColor" font-family="Arial, sans-serif">Solutions</text>
+      <line x1="290" y1="180" x2="610" y2="180" stroke="currentColor" stroke-width="0.5" opacity="0.35"/>
+      <text x="290" y="202" font-size="13" fill="currentColor" opacity="0.65" font-family="Arial, sans-serif">Orbiting around smart solutions</text>
     </svg>
   </div>
   <div class="eyebrow mono">
     <span>PORTFOLIO / LEDGER NO. 01</span>
     <span id="today-date"></span>
   </div>
-  <h1>Aditya <span>builds systems</span><br>that run real businesses.</h1>
+  <h1>Aditya Solutions <span>builds systems</span><br>that run real businesses.</h1>
   <p class="tagline">Firebase-backed ERPs, delivery trackers and PWAs, built solo and shipped to production — from barcode-tracked stock to route-level delivery logs.</p>
+  <div class="stack-row mono">
+    <span class="stack-chip">Firebase</span>
+    <span class="stack-chip">React</span>
+    <span class="stack-chip">Node.js</span>
+    <span class="stack-chip">PWA</span>
+    <span class="stack-chip">Firestore</span>
+  </div>
   <div class="cta-row">
-    <a class="cta-btn mono" href="mailto:apadityapaul@gmail.com?subject=Project%20Inquiry">✉ Get in touch — apadityapaul@gmail.com</a>
+    <a class="cta-btn mono" href="mailto:aditya.solutions.products@gmail.com?subject=Project%20Inquiry">✉ Get in touch — aditya.solutions.products@gmail.com</a>
     <span class="availability mono"><span class="dot"></span> Available for freelance &amp; contract work</span>
   </div>
   <div class="status-board mono" id="status-board"></div>
@@ -489,20 +689,53 @@
       <h2>Have a project in mind?</h2>
       <p>I build and ship production-ready Firebase apps end to end — ERPs, trackers, dashboards, PWAs. If one of these fits what you need, or you want something custom built, let's talk.</p>
     </div>
-    <a class="contact-btn mono" href="mailto:apadityapaul@gmail.com?subject=Project%20Inquiry">
-      ✉ apadityapaul@gmail.com
-    </a>
+    <div class="contact-cta">
+      <a class="contact-btn mono" href="mailto:aditya.solutions.products@gmail.com?subject=Project%20Inquiry">
+        ✉ Email us
+      </a>
+      <a class="contact-email-note mono" href="mailto:aditya.solutions.products@gmail.com?subject=Project%20Inquiry">aditya.solutions.products@gmail.com</a>
+    </div>
   </section>
 </main>
 
 <footer>
-  <div>© 2026 Aditya Solutions Inc. All rights reserved.</div>
-  <div>Built solo. Deployed on <a href="https://github.com/badadi2017-hue" target="_blank" rel="noopener">GitHub Pages</a>. Contact: <a href="mailto:apadityapaul@gmail.com">apadityapaul@gmail.com</a></div>
+  <div>© <span id="copyright-year"></span> Aditya Solutions Inc. All rights reserved.</div>
+  <div>Contact: <a href="mailto:aditya.solutions.products@gmail.com">aditya.solutions.products@gmail.com</a></div>
   <div class="stamp-mark">SHIPPED &amp; RUNNING</div>
 </footer>
 
 <script>
   document.getElementById('today-date').textContent = new Date().toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }).toUpperCase();
+  document.getElementById('copyright-year').textContent = new Date().getFullYear();
+
+  // ---- Theme toggle (persisted) ----
+  const themeBtn = document.getElementById('theme-toggle');
+  function applyTheme(mode){
+    document.documentElement.setAttribute('data-theme', mode);
+    try{ localStorage.setItem('portfolio-theme', mode); }catch(e){}
+  }
+  let startTheme = 'light';
+  try{
+    startTheme = localStorage.getItem('portfolio-theme')
+      || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  }catch(e){}
+  applyTheme(startTheme);
+  themeBtn.addEventListener('click', () => {
+    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+  });
+
+  // ---- Magnetic hover on primary buttons ----
+  function magnetize(el, strength = 0.25){
+    el.addEventListener('mousemove', (e) => {
+      const r = el.getBoundingClientRect();
+      const x = (e.clientX - r.left - r.width / 2) * strength;
+      const y = (e.clientY - r.top - r.height / 2) * strength;
+      el.style.transform = `translate(${x}px, ${y}px)`;
+    });
+    el.addEventListener('mouseleave', () => { el.style.transform = ''; });
+  }
+  document.querySelectorAll('.cta-btn, .contact-btn').forEach(btn => magnetize(btn, 0.18));
 
   const projects = [
     {
@@ -623,6 +856,18 @@
   }
 
   const grid = document.getElementById('grid');
+
+  const revealObserver = 'IntersectionObserver' in window
+    ? new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if(entry.isIntersecting){
+            entry.target.classList.add('in-view');
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' })
+    : { observe: (el) => el.classList.add('in-view') };
+
   projects.forEach(p => {
     const el = document.createElement('div');
     el.className = 'tag';
@@ -646,6 +891,7 @@
       </div>
     `;
     grid.appendChild(el);
+    revealObserver.observe(el);
   });
 
   const board = document.getElementById('status-board');
